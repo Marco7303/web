@@ -28,12 +28,26 @@
 
     <main class="page" role="main">
       <section class="hero" aria-label="Company logo section" id="hero">
-        <img
-          src="assets/aventix-white.svg"
-          alt="Company logo placeholder"
-          class="logo"
-          id="logo"
-        />
+        <div class="logo-shell" id="logo-shell">
+          <img
+            src="assets/aventix-white.svg"
+            alt="Company logo placeholder"
+            class="logo logo-base"
+            id="logo"
+          />
+          <img
+            src="assets/aventix-white.svg"
+            alt=""
+            class="logo logo-glitch logo-glitch-a"
+            aria-hidden="true"
+          />
+          <img
+            src="assets/aventix-white.svg"
+            alt=""
+            class="logo logo-glitch logo-glitch-b"
+            aria-hidden="true"
+          />
+        </div>
       </section>
 
       <footer class="company-info" aria-label="Company details">
@@ -47,27 +61,41 @@
 
     <script>
       const hero = document.getElementById("hero");
-      const logo = document.getElementById("logo");
+      const logoShell = document.getElementById("logo-shell");
       const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      if (hero && logo && canHover) {
+      if (hero && logoShell && canHover) {
         hero.addEventListener("pointermove", (event) => {
           const rect = hero.getBoundingClientRect();
           const x = (event.clientX - rect.left) / rect.width - 0.5;
           const y = (event.clientY - rect.top) / rect.height - 0.5;
 
-          logo.style.setProperty("--tilt-x", `${-y * 8}deg`);
-          logo.style.setProperty("--tilt-y", `${x * 10}deg`);
-          logo.style.setProperty("--move-x", `${x * 8}px`);
-          logo.style.setProperty("--move-y", `${y * 6}px`);
+          logoShell.style.setProperty("--tilt-x", `${-y * 8}deg`);
+          logoShell.style.setProperty("--tilt-y", `${x * 10}deg`);
+          logoShell.style.setProperty("--move-x", `${x * 8}px`);
+          logoShell.style.setProperty("--move-y", `${y * 6}px`);
         });
 
         hero.addEventListener("pointerleave", () => {
-          logo.style.setProperty("--tilt-x", "0deg");
-          logo.style.setProperty("--tilt-y", "0deg");
-          logo.style.setProperty("--move-x", "0px");
-          logo.style.setProperty("--move-y", "0px");
+          logoShell.style.setProperty("--tilt-x", "0deg");
+          logoShell.style.setProperty("--tilt-y", "0deg");
+          logoShell.style.setProperty("--move-x", "0px");
+          logoShell.style.setProperty("--move-y", "0px");
         });
+      }
+
+      if (logoShell && !reduceMotion) {
+        const queueGlitch = () => {
+          const delay = 2600 + Math.random() * 6200;
+          window.setTimeout(() => {
+            logoShell.classList.add("is-glitch");
+            window.setTimeout(() => logoShell.classList.remove("is-glitch"), 640);
+            queueGlitch();
+          }, delay);
+        };
+
+        queueGlitch();
       }
     </script>
   </body>

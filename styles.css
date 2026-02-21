@@ -67,15 +67,72 @@ body {
   perspective: 900px;
 }
 
-.logo {
+.logo-shell {
   width: min(220px, 62vw);
-  height: auto;
-  display: block;
+  position: relative;
+  isolation: isolate;
   transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))
     translate3d(var(--move-x, 0px), var(--move-y, 0px), 0);
   transform-style: preserve-3d;
   will-change: transform;
   transition: transform 260ms cubic-bezier(0.2, 0.9, 0.24, 1);
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.logo-base {
+  position: relative;
+  z-index: 2;
+}
+
+.logo-glitch {
+  --g-top: 0%;
+  --g-height: 100%;
+  --g-shift: 0px;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+  will-change: transform, clip-path, opacity, filter;
+  transform: translate3d(var(--g-shift), 0, 0);
+  clip-path: polygon(
+    0 var(--g-top),
+    100% var(--g-top),
+    100% calc(var(--g-top) + var(--g-height)),
+    0 calc(var(--g-top) + var(--g-height))
+  );
+}
+
+.logo-glitch-a {
+  mix-blend-mode: screen;
+  filter: saturate(1.32) hue-rotate(-38deg) brightness(1.12);
+}
+
+.logo-glitch-b {
+  mix-blend-mode: screen;
+  filter: saturate(1.28) hue-rotate(150deg) brightness(1.12);
+}
+
+.logo-shell.is-glitch .logo-base {
+  animation: glitch-main 640ms steps(2, end) both;
+}
+
+.logo-shell.is-glitch .logo-glitch {
+  opacity: 0.86;
+}
+
+.logo-shell.is-glitch .logo-glitch-a {
+  animation: glitch-a 640ms steps(1, end) both, glitch-flicker 640ms linear both;
+}
+
+.logo-shell.is-glitch .logo-glitch-b {
+  animation: glitch-b 640ms steps(1, end) both,
+    glitch-flicker 640ms linear reverse both;
 }
 
 .company-info {
@@ -125,6 +182,116 @@ body {
   }
 }
 
+@keyframes glitch-main {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: none;
+  }
+  18% {
+    transform: translate3d(-1px, 0, 0) scaleX(0.99);
+    filter: contrast(1.24);
+  }
+  43% {
+    transform: translate3d(2px, -1px, 0) scaleX(1.02);
+    filter: contrast(1.34) brightness(1.1);
+  }
+  68% {
+    transform: translate3d(-2px, 1px, 0) scaleX(0.985);
+    filter: contrast(1.26);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: none;
+  }
+}
+
+@keyframes glitch-a {
+  0% {
+    --g-top: 0%;
+    --g-height: 100%;
+    --g-shift: 0px;
+  }
+  12% {
+    --g-top: 6%;
+    --g-height: 12%;
+    --g-shift: -7px;
+  }
+  27% {
+    --g-top: 44%;
+    --g-height: 19%;
+    --g-shift: 8px;
+  }
+  53% {
+    --g-top: 74%;
+    --g-height: 8%;
+    --g-shift: -6px;
+  }
+  72% {
+    --g-top: 24%;
+    --g-height: 14%;
+    --g-shift: 7px;
+  }
+  100% {
+    --g-top: 0%;
+    --g-height: 100%;
+    --g-shift: 0px;
+  }
+}
+
+@keyframes glitch-b {
+  0% {
+    --g-top: 0%;
+    --g-height: 100%;
+    --g-shift: 0px;
+  }
+  10% {
+    --g-top: 68%;
+    --g-height: 11%;
+    --g-shift: 8px;
+  }
+  34% {
+    --g-top: 12%;
+    --g-height: 16%;
+    --g-shift: -7px;
+  }
+  58% {
+    --g-top: 39%;
+    --g-height: 24%;
+    --g-shift: 6px;
+  }
+  79% {
+    --g-top: 82%;
+    --g-height: 5%;
+    --g-shift: -9px;
+  }
+  100% {
+    --g-top: 0%;
+    --g-height: 100%;
+    --g-shift: 0px;
+  }
+}
+
+@keyframes glitch-flicker {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  9%,
+  23%,
+  37%,
+  56%,
+  74%,
+  90% {
+    opacity: 0.88;
+  }
+  14%,
+  31%,
+  48%,
+  66% {
+    opacity: 0.26;
+  }
+}
+
 @media (max-width: 520px) {
   .company-info {
     gap: 0.8rem;
@@ -137,8 +304,21 @@ body {
     font-size: 0.86rem;
   }
 
-  .logo {
+  .logo-shell {
     transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-shell,
+  .logo-base,
+  .logo-glitch {
+    transition: none;
+    animation: none !important;
+  }
+
+  .logo-glitch {
+    opacity: 0 !important;
   }
 }
 
